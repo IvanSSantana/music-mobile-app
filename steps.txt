@@ -1,0 +1,24 @@
+GIT CONFIG:
+----------------
+git config --global user.name IvanSSantana
+git config --global user.email ivansantospriv@gmail.com
+
+CRIAR PROJETO:
+----------------
+npx create-expo-app@latest musicApp --template blank
+
+EXECUTAR PROJETO:
+----------------
+cd musicApp
+npx expo start --android --localhost
+
+INSTALAR BIBLIOTECAS:
+----------------
+cd musicApp
+npx expo install react-dom react-native-web @expo/metro-runtime
+npx expo install @react-native-community/slider
+npx expo install expo-av
+
+PRIMEIRA INICIALIZAÇÃO:
+----------------
+npx expo start --clear
