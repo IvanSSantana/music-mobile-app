@@ -10,6 +10,7 @@ npx create-expo-app@latest musicApp --template blank
 EXECUTAR PROJETO:
 ----------------
 cd musicApp
+npm i
 npx expo start --android --localhost
 
 INSTALAR BIBLIOTECAS:
