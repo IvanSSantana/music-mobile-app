@@ -19,7 +19,40 @@ export default function App() {
       </View>
 
       <View>
-        <Slider/>
+        <Text style={[styles.songContent, styles.songTitle]}>Título da Música</Text>
+        <Text style={[styles.songContent, styles.songArtist]}>Autor da Música</Text>
+      </View>
+
+      <View>
+        <Slider 
+          style={styles.progressBar}
+          value={10}
+          minimumValue={0}
+          maximumValue={100}
+          thumbTintColor='#FFD369'
+          minimumTrackTintColor='#FFD369'
+          maximumTrackTintColor='#fff'
+          onSlidingComplete={() => {}}
+        />
+        <View style={styles.progressiveLevelDuration}>
+          <Text style={styles.progressiveLabelText}>00:00</Text>
+          <Text style={styles.progressiveLabelText}>01:00</Text>
+        </View>
+
+        <View style={styles.musicControlsContainer}>
+          <TouchableOpacity>
+          <Ionicons name='play-skip-back-outline' size={35} color="#FFD369" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity>
+          <Ionicons name='pause-circle' size={75} color="#FFD369" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity>
+          <Ionicons name='play-skip-forward-outline' size={35} color="#FFD369" />
+          </TouchableOpacity>
+        </View>
+
       </View>
 
       <View style={styles.footer}>
@@ -50,7 +83,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    display: 'flex',
     backgroundColor: '#222831',
+    alignItems: 'center'
   },
   main: {
     flex: 1,
@@ -72,7 +107,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     width: 340,
     height: 360,
-    marginVertical: 20,
+    marginVertical: 20
   },
   elevation:{
     elevation: 5,
@@ -88,4 +123,37 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 15
   },
+  songContent: {
+    textAlign: 'center',
+    color: '#EEEEEE'
+  },
+  songTitle: {
+    fontSize: 18,
+    fontWeight: '600'
+  },
+  songArtist: {
+    fontSize: 16,
+    fontWeight: '300'
+  },
+  progressBar: {
+    width: 350,
+    height: 40,
+    marginTop: 20
+  },
+  progressiveLevelDuration: {
+    width: 340,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  progressiveLabelText: {
+    color: '#fff',
+    fontWeight: '500'
+  },
+  musicControlsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '60%',
+    marginTop: 10
+  }
 });
