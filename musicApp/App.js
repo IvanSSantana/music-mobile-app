@@ -10,13 +10,14 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.main}>
+
         <View style={[styles.imageWrapper, styles.elevation]}>
           <Image
             source={require('./assets/img/silvinha.png')}
             style={styles.musicImage}
             />
         </View>
-      </View>
+      
 
       <View>
         <Text style={[styles.songContent, styles.songTitle]}>Título da Música</Text>
@@ -38,6 +39,7 @@ export default function App() {
           <Text style={styles.progressiveLabelText}>00:00</Text>
           <Text style={styles.progressiveLabelText}>01:00</Text>
         </View>
+      </View>
 
         <View style={styles.musicControlsContainer}>
           <TouchableOpacity>
@@ -83,9 +85,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    display: 'flex',
     backgroundColor: '#222831',
-    alignItems: 'center'
   },
   main: {
     flex: 1,
