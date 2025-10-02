@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Animated, Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, FlatList  } from 'react-native';
+import { Animated, Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
 import { Audio } from 'expo-av';
@@ -9,17 +9,17 @@ import songs from './model/data';
 const { width, height } = Dimensions.get('window');
 
 export default function App() {
-  const[sound, setSound] = useState(null);
-  const[songIndex, setSongIndex] = useState(0);
-  const[songStatus, setSongStatus] = useState(null);
-  const[isPlaying, setIsPlaying] = useState(false);
-  const[isLooping, setIsLooping] = useState(false);
+  const [sound, setSound] = useState(null);
+  const [songIndex, setSongIndex] = useState(0);
+  const [songStatus, setSongStatus] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLooping, setIsLooping] = useState(false);
 
   const songSlider = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    scrollX.addListener(({value}) => {
+    scrollX.addListener(({ value }) => {
       const index = Math.round(value / width);
       // console.log(`ScrollX: ${value}`);
       // console.log(index);
@@ -108,19 +108,23 @@ export default function App() {
   };
 
   const updatePosition = async () => {
-
+    if (sound && isPlaying) {
+      const status = await sound.getStatusAsync();
+      setSongStatus(status);
+      if (status.positionMillis == status.durationMillis && !isLooping) { await stop(); }
+    }
   }
 
   useEffect(() => {
-    const intervalId = setInterval(updatePosition, 500);
+    const IntervalId = setInterval(updatePosition, 500);
     return () => clearInterval(IntervalId);
-  }, [sound, isPlaying]); 
+  }, [sound, isPlaying]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.main}>
 
-        <Animated.FlatList 
+        <Animated.FlatList
           ref={songSlider}
           data={songs}
           keyExtractor={item => item.id}
@@ -133,47 +137,54 @@ export default function App() {
             [
               {
                 nativeEvent: {
-                  contentOffset: { x : scrollX },
+                  contentOffset: { x: scrollX },
                 }
               }
             ],
             { useNativeDriver: true }
           )}
-        />      
-
-      <View>
-        <Text style={[styles.songContent, styles.songTitle]}>{songs[songIndex].title}</Text>
-        <Text style={[styles.songContent, styles.songArtist]}>{songs[songIndex].artist}</Text>
-      </View>
-
-      <View>
-        <Slider 
-          style={styles.progressBar}
-          value={songStatus ? songStatus.positionMillis : 0}
-          minimumValue={0}
-          maximumValue={songStatus ? songStatus.durationMillis : 0}
-          thumbTintColor='#FFD369'
-          minimumTrackTintColor='#FFD369'
-          maximumTrackTintColor='#fff'
-          onSlidingComplete={() => {}}
         />
-        <View style={styles.progressiveLevelDuration}>
-          <Text style={styles.progressiveLabelText}>00:00</Text>
-          <Text style={styles.progressiveLabelText}>01:00</Text>
+
+        <View>
+          <Text style={[styles.songContent, styles.songTitle]}>{songs[songIndex].title}</Text>
+          <Text style={[styles.songContent, styles.songArtist]}>{songs[songIndex].artist}</Text>
         </View>
-      </View>
+
+        <View>
+          <Slider
+            style={styles.progressBar}
+            value={songStatus ? songStatus.positionMillis : 0}
+            minimumValue={0}
+            maximumValue={songStatus ? songStatus.durationMillis : 0}
+            thumbTintColor='#FFD369'
+            minimumTrackTintColor='#FFD369'
+            maximumTrackTintColor='#fff'
+            onSlidingComplete={(value) => {
+              sound.setPositionAsync(value);
+            }}
+          />
+          <View style={styles.progressiveLevelDuration}>
+            <Text style={styles.progressiveLabelText}>
+              {songStatus ? `${Math.floor(songStatus.positionMillis / 1000 / 60)}:${String(Math.floor((songStatus.positionMillis / 1000) % 60)).padStart(2, "0")}` : "00:00"}
+            </Text>
+
+            <Text style={styles.progressiveLabelText}>
+              {songStatus ? `${Math.floor(songStatus.durationMillis / 1000 / 60)}:${String(Math.floor((songStatus.durationMillis / 1000) % 60)).padStart(2, "0")}` : "00:00"}
+            </Text>
+          </View>
+        </View>
 
         <View style={styles.musicControlsContainer}>
           <TouchableOpacity onPress={skipToPrevious}>
-          <Ionicons name='play-skip-back-outline' size={35} color="#FFD369" />
+            <Ionicons name='play-skip-back-outline' size={35} color="#FFD369" />
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={handlePlayPause}>
-          <Ionicons name={isPlaying ? 'pause-circle' : 'play-circle'} size={75} color="#FFD369" />
+            <Ionicons name={isPlaying ? 'pause-circle' : 'play-circle'} size={75} color="#FFD369" />
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={skipToNext}>
-          <Ionicons name='play-skip-forward-outline' size={35} color="#FFD369" />
+            <Ionicons name='play-skip-forward-outline' size={35} color="#FFD369" />
           </TouchableOpacity>
         </View>
 
@@ -185,8 +196,8 @@ export default function App() {
             <Ionicons name='heart-outline' size={30} color="#888888" />
           </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Ionicons name='repeat' size={30} color="#888888" />
+          <TouchableOpacity onPress={() => { repeat(!isLooping) }}>
+            <Ionicons name='repeat' size={30} color={isLooping ? "#ffffff" : "#888888"} />
           </TouchableOpacity>
 
           <TouchableOpacity>
@@ -225,6 +236,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderTopColor: '#393E45',
     borderTopWidth: 1,
+    marginBottom: 30
   },
   iconWrapper: {
     flexDirection: 'row',
@@ -236,7 +248,7 @@ const styles = StyleSheet.create({
     height: 360,
     marginVertical: 20
   },
-  elevation:{
+  elevation: {
     elevation: 5,
     shadowOffset: {
       width: 5,
@@ -245,8 +257,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3.84
   },
-  musicImage:{
-    width:'100%',
+  musicImage: {
+    width: '100%',
     height: '100%',
     borderRadius: 15
   },
